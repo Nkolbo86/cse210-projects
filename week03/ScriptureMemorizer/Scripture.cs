@@ -6,21 +6,16 @@ public class Scripture
     private Reference _reference;
     private List<Word> _words;
 
-    // Constructor
-    public Scripture(string verseText, Reference reference)
+    public Scripture(string text, Reference reference)
     {
         _reference = reference;
         _words = new List<Word>();
-
-        // Split the verse text into words and create Word objects
-        string[] words = verseText.Split(' ');
-        foreach (string word in words)
+        foreach (string word in text.Split(' '))
         {
             _words.Add(new Word(word));
         }
     }
 
-    // Method to hide random words
     public void HideRandomWords()
     {
         Random random = new Random();
@@ -33,7 +28,6 @@ public class Scripture
         }
     }
 
-    // Method to return the scripture with hidden words
     public string GetDisplayText()
     {
         string scriptureText = "";
@@ -44,7 +38,6 @@ public class Scripture
         return $"{_reference.GetDisplayText()}: {scriptureText.Trim()}";
     }
 
-    // Method to check if all words are hidden
     public bool IsCompletelyHidden()
     {
         foreach (Word word in _words)
