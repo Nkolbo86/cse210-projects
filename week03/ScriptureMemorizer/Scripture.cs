@@ -1,52 +1,93 @@
 using System;
 using System.Collections.Generic;
 
-public class Scripture
+namespace ScriptureMemorizer
 {
-    private Reference _reference;
-    private List<Word> _words;
-
-    public Scripture(string text, Reference reference)
+    public class Scripture
     {
-        _reference = reference;
-        _words = new List<Word>();
-        foreach (string word in text.Split(' '))
-        {
-            _words.Add(new Word(word));
-        }
-    }
+        private Reference _reference;
+        private List<Word> _words;
+        private string _fullText;
 
-    public void HideRandomWords()
-    {
-        Random random = new Random();
-        foreach (Word word in _words)
+        public Scripture(string text, Reference reference)
         {
-            if (!word.IsHidden() && random.Next(0, 2) == 0)
+            _reference = reference;
+            _words = new List<Word>();
+            _fullText = text;
+
+            foreach (string word in text.Split(' '))
             {
-                word.Hide();
+                _words.Add(new Word(word));
             }
         }
-    }
 
-    public string GetDisplayText()
-    {
-        string scriptureText = "";
-        foreach (Word word in _words)
+        public void HideRandomWords()
         {
-            scriptureText += word.GetDisplayText() + " ";
-        }
-        return $"{_reference.GetDisplayText()}: {scriptureText.Trim()}";
-    }
+            Random random = new Random();
+            int wordsToHide = 2; // Set how many words to hide each time
+            int hiddenCount = 0;
 
-    public bool IsCompletelyHidden()
-    {
-        foreach (Word word in _words)
-        {
-            if (!word.IsHidden())
+            while (hiddenCount < wordsToHide)
             {
-                return false;
+                int index = random.Next(0, _words.Count);
+                Word word = _words[index];
+
+                if (!word.IsHidden())
+                {
+                    word.Hide();
+                    hiddenCount++;
+                }
+
+                if (IsCompletelyHidden())
+                {
+                    break;
+                }
             }
         }
-        return true;
+
+        public string GetDisplayText()
+        {
+            string scriptureText = "";
+            foreach (Word word in _words)
+            {
+                scriptureText += word.GetDisplayText() + " ";
+            }
+            return $"{_reference.GetDisplayText()}: {scriptureText.Trim()}";
+        }
+
+        public bool IsCompletelyHidden()
+        {
+            foreach (Word word in _words)
+            {
+                if (!word.IsHidden())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool IsFullScriptureCorrect(string input)
+        {
+            return input.Trim().Equals(_fullText, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public int GetHiddenWordCount()
+        {
+            int count = 0;
+            foreach (Word word in _words)
+            {
+                if (word.IsHidden())
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public int GetTotalWordCount()
+        {
+            return _words.Count;
+        }
     }
 }
